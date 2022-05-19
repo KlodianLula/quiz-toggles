@@ -20,7 +20,7 @@ export const mockData =
     },
     {
       "toggleOptions": [
-        "Partially permeable membrane",
+        "Partially permeable membrane and whatever else",
         "Impermeable membrane"
       ],
       "selectedIndex": 1,

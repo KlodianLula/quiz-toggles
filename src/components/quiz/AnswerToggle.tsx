@@ -11,6 +11,8 @@ import {
 } from "../../styles/quiz"
 import { selectAnswerOption } from "../../redux/quizSlice";
 import { Answer } from "../../models/Answer";
+import useTextWidth from "../../hooks/lib/useTextWidth";
+import "@fontsource/mulish";
 
 export interface AnswerProps {
   answer: Answer,
@@ -19,26 +21,39 @@ export interface AnswerProps {
 }
 
 export const AnswerToggle = ({ answer, answerIndex, totalCorrectAnswers }: AnswerProps) => {
-  const dispatch = useAppDispatch();
-
+  const inMulish = "27.8px times";
+  const optionWidths = [
+    useTextWidth({ text: answer.toggleOptions[0], font: inMulish }),
+    useTextWidth({ text: answer.toggleOptions[1], font: inMulish })
+  ];
   const selectedOption = answer.selectedIndex === 1;
+  const dispatch = useAppDispatch();
 
   return (
     <ToggleWrapper>
-      <ToggleBackWrapper>
+      <ToggleBackWrapper
+        optionWidths={optionWidths}
+        answerIndex={answerIndex}
+      >
         <ToggleBack>
-          <SelectToggleBack 
+          <SelectToggleBack
+            optionWidths={optionWidths}
             selectedOption={selectedOption}
             totalCorrectAnswers={totalCorrectAnswers}
           />
         </ToggleBack>
       </ToggleBackWrapper>
-
       <ToggleFrontWrapper>
-        <ToggleFront>
+        <ToggleFront
+          optionWidths={optionWidths}
+        >
           {answer.toggleOptions.map((optionText, optionIndex) =>
-            <ToggleFrontOption key={parseInt(answerIndex.toString() + optionIndex.toString())}>
+
+            <ToggleFrontOption
+              key={parseInt(answerIndex.toString() + optionIndex.toString())}
+            >
               <OptionText
+                optionWidths={optionWidths}
                 disabled={totalCorrectAnswers > 3} // here not hard coded!
                 onClick={() => dispatch(selectAnswerOption({ answerIndex, optionIndex }))}
                 optionIndex={optionIndex}

@@ -1,15 +1,12 @@
 export const widthBreakpoints = {
-  sm: 36,
-  md: 48,
-  lg: 62,
-  xl: 75
+  sm: 37.5,  // 600px
+  md: 48,    // 768px
+  lg: 57.5,  // 920px
+  xl: 75     // 1200px 
 };
 
 export const heightBreakpoints = {
-  sm: 20,
-  md: 30,
-  lg: 60,
-  xl: 80
+  lg: 60,    // 960px
 };
 
 export const mediaWidthQueries = (key: keyof typeof widthBreakpoints) => {
