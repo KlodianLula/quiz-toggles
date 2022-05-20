@@ -1,133 +1,141 @@
 import styled from "styled-components"
-import { tgColors } from "../../util";
-import { mediaHeightQueries, mediaWidthQueries, widthBreakpoints } from "../mediaQueries";
 import { theme } from "../theme";
+import { widthBreakpoints } from "../mediaQueries";
+import { tgColors } from "../../util";
 
 export const QuizWrapper = styled.div`
   font-family: 'Mulish';
   font-style: normal;
   font-weight: 700;
   font-size: 24px;
-
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   width: 100vw;
-  height: 1000px;
+  height: 100vh;
 
-  ${mediaHeightQueries("lg")`
-    height: 100vh;
-  `};
+  @media (max-width: 320px) { 
+    width: 320px;
+  };
 
-  ${mediaWidthQueries("sm")`
-    
-  `};
+  @media (max-height: 720px) {
+    height: 720px;
+  };
 `;
-
 export const QuestionTitle = styled.div`
-  color: white; // here
   font-family: 'Mulish';
   font-style: normal;
   font-weight: 700;
-  font-size: 40px;
+  font-size: 20px;
   z-index: 3;
-`;
+  color: white; 
 
+  @media (min-width: ${widthBreakpoints["md"]}em) {
+    font-size: 40px;
+  }
+`;
 export const CorrectAnswer = styled.div`
-  color: white; // here
   font-family: 'Mulish';
   font-style: normal;
   font-weight: 700;
-  font-size: 32px;
+  font-size: 16px;
   z-index: 3;
+  color: white; 
+
+  @media (min-width: ${widthBreakpoints["md"]}em) {
+    font-size: 32px;
+  }
 `;
 export const AnswersWrapper = styled.div`
+  position: relative;
   width: 100%;
-  height: 70%; // calc(70vh); // here // 70%;
+  height: 70%; 
   z-index: 100;
   display: flex;
-  justify-content: space-evenly; // here
+  justify-content: space-evenly;
   flex-direction: column;
-  position: relative;
   align-items: center;
 `;
-
 export const ToggleWrapper = styled.div`
   position: relative;
   align-items: center;
   display: flex;
   justify-content: center;
 `;
-
-// back
 export const ToggleBackWrapper = styled.div<{
-  // parentWidth: number, 
-  optionWidths: number[],
-  answerIndex: number
+  resizedToggleWidth: number,
+  optionsWidth: number[],
+  answerIndex: number,
+  totalCorrectAnswers: number
 }>`
   position: absolute;
   z-index: 1;
-  border-radius: 9rem;
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  width: 95vw;
   border: 2px solid #FBFBFB;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 
-  height: ${({ optionWidths }) =>
-    (optionWidths[0] > 450) ? "160px" : "80px"};
+  border-color: ${({ totalCorrectAnswers }) =>
+    tgColors[totalCorrectAnswers][1]}; 
 
-  width : 300px;
+  border-radius: ${({ optionsWidth, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? "24px"
+      : "40px"};    
 
-  ${mediaWidthQueries("sm")`
-    width: 95vw;
-  `}; 
-  
-  ${mediaWidthQueries("md")`
-    width: 95vw;
-  `};
+  height: ${({ optionsWidth, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? "96px"
+      : "48px"};
+
+  @media (max-width: 320px) { 
+    width: 300px;
+  };
 
   @media (min-width: ${widthBreakpoints["md"]}em) { 
+    width: 95vw;
+    height: ${({ optionsWidth, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? "160px"
+      : "80px"};
+  };
+
+  @media (min-width: ${widthBreakpoints["lg"]}em) { 
     width: 900px;
-    height: ${({ optionWidths }) =>
-    (optionWidths[0] > 450) ? "160px" : "80px"};
-  }
+  };
 `;
 
 export const ToggleBack = styled.div`
   display: flex;
   align-items: center;
-  /* height: 80px; */
   background-color: transparent; 
-  border-radius: 9rem;
   box-sizing: border-box;
   cursor: pointer;
 `;
 
 export const SelectToggleBack = styled.button<{
-  optionWidths: number[],
+  resizedToggleWidth: number,
+  optionsWidth: number[],
   selectedOption: boolean,
   totalCorrectAnswers: number
 }>`
-height: 80px; //here
+  border: 0px;
+  margin-top: -2px; 
+  margin-left: -2px; 
+  transition: all 0.1s ease-in-out;
+  width: calc(50% + 2px); 
+  height: 48px; 
 
-border-radius: 9rem;
-border: 0px;
-margin-top: -2px; //here
-margin-left: -2px;
+  background-color: ${({ totalCorrectAnswers }) =>
+    tgColors[totalCorrectAnswers][1]}; 
 
-background-color: ${({ totalCorrectAnswers }) => tgColors[totalCorrectAnswers][1]};
-// normal case
-/* transform: ${({ selectedOption }) => (!selectedOption ? "translateX(0px)" : "translateX(calc(100%))")}; */
-transition: all 0.2s ease-in-out;
+  width: ${({ optionsWidth, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? "calc(100% + 2px)"
+      : "calc(50% + 2px)"};
 
-width: calc(50% + 2px);
-// also option[1]
-width: ${({ optionWidths }) =>
-    (optionWidths[0] > 450) ? "calc(100% + 2px)" : "calc(50% + 2px)"};
-
-
-// column case
-transform: ${({ optionWidths, selectedOption }) =>
-    (optionWidths[0] > 450)
+  transform: ${({ optionsWidth, selectedOption, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
       ? (!selectedOption
         ? "translateY(0px)"
         : "translateY(calc(100%))")
@@ -136,53 +144,79 @@ transform: ${({ optionWidths, selectedOption }) =>
         : "translateX(calc(100%))")
   };
 
-border-radius: ${({ optionWidths, selectedOption }) =>
-    (optionWidths[0] > 450)
+  border-radius: ${({ optionsWidth, selectedOption, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
       ? (!selectedOption
-        ? "100px 100px 0px 0px"
-        : "0px 0px 100px 100px")
+        ? "24px 24px 0px 0px"
+        : "0px 0px 24px 24px")
       : (!selectedOption
-        ? "9rem"
-        : "9rem")
+        ? "40px"
+        : "40px")
   };
 
+  @media (min-width: ${widthBreakpoints["md"]}em) {
+    height: 80px; 
+
+    width: ${({ optionsWidth, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? "calc(100% + 2px)"
+      : "calc(50% + 2px)"};
+
+    transform: ${({ optionsWidth, selectedOption, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? (!selectedOption
+        ? "translateY(0px)"
+        : "translateY(calc(100%))")
+      : (!selectedOption
+        ? "translateX(0px)"
+        : "translateX(calc(100%))")};
+
+    border-radius: ${({ optionsWidth, selectedOption, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? (!selectedOption
+        ? "24px 24px 0px 0px"
+        : "0px 0px 24px 24px")
+      : (!selectedOption
+        ? "40px"
+        : "40px")};
+  };
 `;
 
-
-
-// front
 export const ToggleFrontWrapper = styled.div`
   position: absolute;
   z-index: 2;
-  
-  // here
-  width: 300px;
+  width: 95vw;
 
-  ${mediaWidthQueries("sm")`
-    width: 95vw;
-  `}; 
-  
-  ${mediaWidthQueries("md")`
-    width: 95vw;
-  `};
+  @media (max-width: 320px) { 
+    width: 320px;
+  };
 
-  ${mediaWidthQueries("lg")`
+  @media (min-width: ${widthBreakpoints["lg"]}em) { 
     width: 900px;
-  `};
+  };
 `;
 
 export const ToggleFront = styled.div<{
-  optionWidths: number[],
+  resizedToggleWidth: number,
+  optionsWidth: number[],
 }>`
   display: flex;
   align-items: center;
   justify-content: start;
-  /* flex-direction: column; */
+  white-space: nowrap;
 
-  // option[1] also
-  flex-direction: ${({ optionWidths }) =>
-    (optionWidths[0] > 450) ? "column" : "row"};
+  flex-direction: ${({ optionsWidth, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? "column"
+      : "row"
+  };
 
+  @media (min-width: ${widthBreakpoints["md"]}em) {
+    flex-direction: ${({ optionsWidth, resizedToggleWidth }) =>
+    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
+      ? "column"
+      : "row"};
+  }
 `;
 
 export const ToggleFrontOption = styled.div`
@@ -192,7 +226,6 @@ export const ToggleFrontOption = styled.div`
 `;
 
 export const OptionText = styled.button<{
-  optionWidths: number[],
   optionIndex: number,
   selectedIndex: number,
   totalCorrectAnswers: number
@@ -200,18 +233,20 @@ export const OptionText = styled.button<{
   font-family: 'Mulish';
   font-style: normal;
   font-weight: 700;
-  font-size: 24px;
-
-  border: none;
-  line-height: 80px;
+  font-size: 18px;
+  line-height: 40px;
+  transition: all 0.2s ease-in-out;
   background-color: transparent;
+  border: none;
+  cursor: pointer;
 
   color: ${({ optionIndex, selectedIndex, totalCorrectAnswers }) =>
     optionIndex === selectedIndex
       ? tgColors[totalCorrectAnswers][0]
       : theme.white};
-      
 
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
+  @media (min-width: ${widthBreakpoints["md"]}em) {
+    line-height: 80px;
+    font-size: 24px;
+  }
 `;
