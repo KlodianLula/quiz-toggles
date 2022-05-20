@@ -38,9 +38,8 @@ export const Quiz = () => {
           />)}
       </AnswersWrapper>
 
-      {/* hard coded */}
       <CorrectAnswer>
-        The answer is {totalCorrectAnswers > 3 ? "correct" : "incorrect"}
+        The answer is {totalCorrectAnswers === quiz.answers.length ? "correct" : "incorrect"}
       </CorrectAnswer>
     </QuizWrapper>
   )

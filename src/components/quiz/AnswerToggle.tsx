@@ -30,7 +30,6 @@ export const AnswerToggle = ({ answer, answerIndex, totalCorrectAnswers }: Answe
     useTextWidth({ text: answer.toggleOptions[1], font: inMulish })
   ];
 
-  // shifi nje here keto me any
   const ref = useRef<any>();
   const [resizedToggleWidth, setResizedToggleWidth] = useState<any>();
 
