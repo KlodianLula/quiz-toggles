@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import { theme } from "../theme";
 import { widthBreakpoints } from "../mediaQueries";
-import { tgColors } from "../../util";
+import { tgColors, translateX_TwoOptions, translateX_ThreeOptions, translateY_TwoOptions, translateY_ThreeOptions } from "../../util";
 
 export const QuizWrapper = styled.div`
   font-family: 'Mulish';
@@ -9,7 +9,7 @@ export const QuizWrapper = styled.div`
   font-weight: 700;
   font-size: 24px;
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   align-items: center;
   flex-direction: column;
   width: 100vw;
@@ -19,6 +19,7 @@ export const QuizWrapper = styled.div`
     width: 320px;
   };
 
+  // TODO: on 3 options: 920px ...
   @media (max-height: 720px) {
     height: 720px;
   };
@@ -47,15 +48,28 @@ export const CorrectAnswer = styled.div`
     font-size: 32px;
   }
 `;
-export const AnswersWrapper = styled.div`
+export const AnswersWrapper = styled.div<{
+  responsiveGridFractions: string,
+  responsiveGridHeight: string,
+  totalToggleOptions: number
+}>`
   position: relative;
   width: 100%;
-  height: 70%; 
   z-index: 100;
-  display: flex;
-  justify-content: space-evenly;
-  flex-direction: column;
-  align-items: center;
+  display: grid;
+  align-content: center;
+  
+  grid-template-rows: ${({ responsiveGridFractions }) => responsiveGridFractions};
+  
+  // TODO: calculate automatically
+  height: ${({ totalToggleOptions, responsiveGridHeight }) =>
+    (totalToggleOptions > 2)
+      ? ("calc(" + responsiveGridHeight + " - 200px)")
+      : ("calc(" + responsiveGridHeight + " - 160px)")};
+
+  @media (min-width: ${widthBreakpoints["md"]}em) { 
+    height: ${({ responsiveGridHeight }) => responsiveGridHeight};
+};
 `;
 export const ToggleWrapper = styled.div`
   position: relative;
@@ -64,10 +78,9 @@ export const ToggleWrapper = styled.div`
   justify-content: center;
 `;
 export const ToggleBackWrapper = styled.div<{
-  resizedToggleWidth: number,
-  optionsWidth: number[],
-  answerIndex: number,
-  totalCorrectAnswers: number
+  isOverlap: boolean,
+  totalCorrectAnswers: number,
+  totalToggleOptions: number
 }>`
   position: absolute;
   z-index: 1;
@@ -78,15 +91,17 @@ export const ToggleBackWrapper = styled.div<{
   border-color: ${({ totalCorrectAnswers }) =>
     tgColors[totalCorrectAnswers][1]}; 
 
-  border-radius: ${({ optionsWidth, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? "24px"
-      : "40px"};    
+  border-radius: 24px;
 
-  height: ${({ optionsWidth, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? "96px"
-      : "48px"};
+  height: ${({ totalToggleOptions, isOverlap }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? "144px"
+        : "48px"
+      : isOverlap
+        ? "96px"
+        : "48px"
+  };
 
   @media (max-width: 320px) { 
     width: 300px;
@@ -94,10 +109,16 @@ export const ToggleBackWrapper = styled.div<{
 
   @media (min-width: ${widthBreakpoints["md"]}em) { 
     width: 95vw;
-    height: ${({ optionsWidth, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? "160px"
-      : "80px"};
+    border-radius: 40px;
+
+    height: ${({ isOverlap, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? "240px"
+        : "80px"
+      : isOverlap
+        ? "160px"
+        : "80px"};
   };
 
   @media (min-width: ${widthBreakpoints["lg"]}em) { 
@@ -112,73 +133,117 @@ export const ToggleBack = styled.div`
   box-sizing: border-box;
   cursor: pointer;
 `;
-
-export const SelectToggleBack = styled.button<{
-  resizedToggleWidth: number,
-  optionsWidth: number[],
-  selectedOption: boolean,
-  totalCorrectAnswers: number
+export const ToggleBackSlider = styled.button<{
+  isOverlap: boolean,
+  selectedIndex: number,
+  totalCorrectAnswers: number,
+  totalToggleOptions: number,
 }>`
   border: 0px;
   margin-top: -2px; 
   margin-left: -2px; 
   transition: all 0.1s ease-in-out;
-  width: calc(50% + 2px); 
-  height: 48px; 
+  height: 48px;
 
   background-color: ${({ totalCorrectAnswers }) =>
     tgColors[totalCorrectAnswers][1]}; 
 
-  width: ${({ optionsWidth, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? "calc(100% + 2px)"
-      : "calc(50% + 2px)"};
+  width: ${({ isOverlap, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? "calc(100% + 2px)"
+        : "calc(33.33% + 2px)"
+      : isOverlap
+        ? "calc(100% + 2px)"
+        : "calc(50% + 2px)"};
 
-  transform: ${({ optionsWidth, selectedOption, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? (!selectedOption
-        ? "translateY(0px)"
-        : "translateY(calc(100%))")
-      : (!selectedOption
-        ? "translateX(0px)"
-        : "translateX(calc(100%))")
+  /* width: ${({ isOverlap, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? "calc(33.33% + 2px)"
+        : "calc(100% + 2px)"
+      : isOverlap
+        ? "calc(100% + 2px)"
+        : "calc(50% + 2px)"}; */
+
+  /* transform: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? translateY_ThreeOptions[selectedIndex]
+        : translateX_ThreeOptions[selectedIndex]
+      : isOverlap
+        ? translateY_TwoOptions[selectedIndex]
+        : translateX_TwoOptions[selectedIndex]
+  }; */
+
+  transform: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? translateY_ThreeOptions[selectedIndex]
+        : translateX_ThreeOptions[selectedIndex]
+      : isOverlap
+        ? translateY_TwoOptions[selectedIndex]
+        : translateX_TwoOptions[selectedIndex]
   };
 
-  border-radius: ${({ optionsWidth, selectedOption, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? (!selectedOption
-        ? "24px 24px 0px 0px"
-        : "0px 0px 24px 24px")
-      : (!selectedOption
+  border-radius: ${({ isOverlap, selectedIndex }) =>
+    isOverlap
+      ? (!selectedIndex
+        ? "40px 40px 40px 40px"
+        : "40px 40px 40px 40px")
+      : (!selectedIndex
         ? "40px"
-        : "40px")
-  };
+        : "40px")};
+
+  /* border-radius: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? (!selectedIndex
+          ? "24px 24px 0px 0px"
+          : "0px 0px 24px 24px")
+        : (!selectedIndex
+          ? "24px"
+          : "24px")
+      : isOverlap
+        ? (!selectedIndex
+          ? "24px 24px 0px 0px"
+          : "0px 0px 24px 24px")
+        : (!selectedIndex
+          ? "24px"
+          : "24px")
+  }; */
 
   @media (min-width: ${widthBreakpoints["md"]}em) {
     height: 80px; 
+    
+    /* width: ${({ isOverlap, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? "calc(100% + 2px)"
+        : "calc(33.33% + 2px)"
+      : isOverlap
+        ? "calc(100% + 2px)"
+        : "calc(50% + 2px)"}; */
 
-    width: ${({ optionsWidth, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? "calc(100% + 2px)"
-      : "calc(50% + 2px)"};
+  /* transform: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? translateY_ThreeOptions[selectedIndex]
+        : translateX_ThreeOptions[selectedIndex]
+      : isOverlap
+        ? translateY_TwoOptions[selectedIndex]
+        : translateX_TwoOptions[selectedIndex]
+  }; */
 
-    transform: ${({ optionsWidth, selectedOption, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? (!selectedOption
-        ? "translateY(0px)"
-        : "translateY(calc(100%))")
-      : (!selectedOption
-        ? "translateX(0px)"
-        : "translateX(calc(100%))")};
-
-    border-radius: ${({ optionsWidth, selectedOption, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? (!selectedOption
-        ? "24px 24px 0px 0px"
-        : "0px 0px 24px 24px")
-      : (!selectedOption
+  border-radius: ${({ isOverlap, selectedIndex }) =>
+    isOverlap
+      ? (!selectedIndex
+        ? "40px 40px 40px 40px"
+        : "40px 40px 40px 40px")
+      : (!selectedIndex
         ? "40px"
         : "40px")};
+
   };
 `;
 
@@ -197,26 +262,23 @@ export const ToggleFrontWrapper = styled.div`
 `;
 
 export const ToggleFront = styled.div<{
-  resizedToggleWidth: number,
-  optionsWidth: number[],
+  isOverlap: boolean,
+  totalToggleOptions: number,
 }>`
   display: flex;
   align-items: center;
   justify-content: start;
   white-space: nowrap;
 
-  flex-direction: ${({ optionsWidth, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? "column"
-      : "row"
+  flex-direction: ${({ isOverlap, totalToggleOptions }) =>
+    (totalToggleOptions > 2)
+      ? isOverlap
+        ? "column"
+        : "row"
+      : isOverlap
+        ? "column"
+        : "row"
   };
-
-  @media (min-width: ${widthBreakpoints["md"]}em) {
-    flex-direction: ${({ optionsWidth, resizedToggleWidth }) =>
-    (((resizedToggleWidth / 2) < optionsWidth[0]) || ((resizedToggleWidth / 2) < optionsWidth[1]))
-      ? "column"
-      : "row"};
-  }
 `;
 
 export const ToggleFrontOption = styled.div`

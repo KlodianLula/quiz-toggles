@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { mockData } from "../data/mock";
+import { mockData_3_Options } from "../data/mock";
 import { Answer } from "../models/Answer";
 
-export const useQuiz = (initialValue = mockData) => {
+export const useQuiz = (initialValue = mockData_3_Options) => {
   const [quiz, setQuiz] = useState(initialValue);
 
   const solveQuiz = (answerIndex: number, optionIndex: number, answer: Answer) => {

@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { mockData } from "../data/mock";
+import { mockData_3_Options } from "../data/mock";
 import { Quiz } from "../models/Quiz";
 import { sumCorrectAnswers } from "../util";
 
-const initialCorrectAnswers = sumCorrectAnswers(mockData.answers);
+const initialCorrectAnswers = sumCorrectAnswers(mockData_3_Options.answers);
 
 export const useAnswer = () => {
   const [totalCorrectAnswers, setTotalCorrectAnswers ] = useState(initialCorrectAnswers);
