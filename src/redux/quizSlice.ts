@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { mockData_3_Options } from "../data/mock";
+import { mockData_2_Options, mockData_3_Options } from "../data/mock";
 import { Quiz } from "../models/Quiz"
 
 export interface QuizState {
@@ -7,7 +7,7 @@ export interface QuizState {
     gridFractions: number[]
 }
 
-const quizInitialValue: Quiz = mockData_3_Options;
+const quizInitialValue: Quiz = mockData_2_Options; // for answers with 3 options use -->  mockData_3_Options;
 const gridInitialFractions: number[] = Array(quizInitialValue.answers.length).fill(1);
 
 const initialState: QuizState = {

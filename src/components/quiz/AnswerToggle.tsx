@@ -1,5 +1,9 @@
-import { useRef, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../redux/store/configureStore";
+import { useRef, useEffect, useState, useCallback } from "react";
+import { useAppDispatch } from "../../redux/store/configureStore";
+import { selectAnswerOption } from "../../redux/quizSlice";
+import { getTextWidth, inMulish } from "../../util";
+import { Answer } from "../../models/Answer";
+import { useWindow } from "../../hooks/useWindow";
 import {
   ToggleWrapper,
   ToggleBackWrapper,
@@ -11,16 +15,13 @@ import {
   OptionText
 } from "../../styles/quiz"
 import "@fontsource/mulish";
-import useTextWidth from "../../hooks/lib/useTextWidth";
-import { incrementGridFraction, decrementGridFraction, selectAnswerOption } from "../../redux/quizSlice";
-import { checkOverlap } from "../../util";
-import { Answer } from "../../models/Answer";
 
 export interface AnswerProps {
   answer: Answer,
   answerIndex: number,
   totalCorrectAnswers: number,
-  totalToggleOptions: number
+  totalToggleOptions: number,
+  totalAnswers: number
 }
 
 export const AnswerToggle = (
@@ -28,46 +29,35 @@ export const AnswerToggle = (
     answerIndex,
     totalCorrectAnswers,
     totalToggleOptions,
+    totalAnswers,
   }: AnswerProps
 ) => {
   const dispatch = useAppDispatch();
-  const { gridFractions } = useAppSelector(state => state.quiz);
-
-  const inMulish = "27.8px times";
-  const optionsWidth = [
-    useTextWidth({ text: answer.toggleOptions[0], font: inMulish }),
-    useTextWidth({ text: answer.toggleOptions[1], font: inMulish })
-  ];
+  const { isOverlap, toggleWidth, calculateToggleWidth } = useWindow();
 
   const ref = useRef<any>();
-  const [toggleWidth, setToggleWidth] = useState(1000);
-  const [isOverlap, setIsOverlap] = useState(false);
-
-  const getToggleWidth = () => {
-    setToggleWidth(parseInt(window.getComputedStyle(ref.current)
-      .getPropertyValue("width")
-      .split(".")[0]));
-
-    const isOverlaping: boolean = checkOverlap(toggleWidth, optionsWidth, totalToggleOptions);
-
-    if (isOverlaping) {
-      setIsOverlap(isOverlaping);
-      dispatch(incrementGridFraction({ answerIndex, totalToggleOptions }));
-    }
-
-    if (!isOverlaping && gridFractions[answerIndex] > 1) {
-      setIsOverlap(isOverlaping);
-      dispatch(decrementGridFraction({ answerIndex }));
-    }
-  }
+  const [refWidth, setRefWidth] = useState("");
+  const [optionsWidths, setOptionsWidths] = useState<number[]>([]);
 
   useEffect(() => {
-    getToggleWidth(); // on load,
+    const tempArray = answer.toggleOptions.map(option => {
+      return getTextWidth(option, inMulish);
+    });
+    setOptionsWidths(tempArray);
+  }, []); // only on first load!
+
+  const getToggleWidth = useCallback(() => {
+    setRefWidth(window.getComputedStyle(ref.current).getPropertyValue("width"));
+
+    calculateToggleWidth(refWidth, optionsWidths, totalToggleOptions, answerIndex);
+  }, [refWidth, toggleWidth]);
+
+  useEffect(() => {
+    getToggleWidth();
 
     window.addEventListener('resize', getToggleWidth);
     return () => window.removeEventListener('resize', getToggleWidth);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [toggleWidth, setToggleWidth]); // dependency is handled by the event listener.
+  }, [answer, getToggleWidth]);
 
   return (
     <ToggleWrapper>
@@ -97,7 +87,7 @@ export const AnswerToggle = (
               key={parseInt(answerIndex.toString() + optionIndex.toString())}
             >
               <OptionText
-                disabled={totalCorrectAnswers > 3} // here not hard coded!
+                disabled={totalCorrectAnswers === totalAnswers}
                 onClick={() => dispatch(selectAnswerOption({ answerIndex, optionIndex }))}
                 optionIndex={optionIndex}
                 selectedIndex={answer.selectedIndex}

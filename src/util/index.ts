@@ -1,6 +1,8 @@
 import { Answer } from "../models/Answer";
 import { theme } from "../styles/theme";
 
+export const inMulish = "27.8px times";
+
 export const bgColors = [
   theme.zeroCorrect,
   theme.oneCorrect,
@@ -100,3 +102,15 @@ export const generateGridHeight = (responsiveGridFractions: number[]) => {
     return generatedGridHeight + (fraction * 80) + 20;
   }, 0);
 }
+
+export const getTextWidth = (currentText: string, font: string) => {
+  const fragment: DocumentFragment = document.createDocumentFragment();
+  const canvas: HTMLCanvasElement = document.createElement('canvas');
+  fragment.appendChild(canvas);
+
+  const context = canvas.getContext('2d') as CanvasRenderingContext2D;
+  context.font = font;
+
+  const metrics = context.measureText(currentText);
+  return metrics.width;
+};

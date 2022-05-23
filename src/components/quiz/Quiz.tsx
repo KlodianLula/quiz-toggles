@@ -43,6 +43,7 @@ export const Quiz = () => {
             answerIndex={answerIndex}
             totalCorrectAnswers={totalCorrectAnswers}
             totalToggleOptions={answer.toggleOptions.length}
+            totalAnswers={quiz.answers.length}
           />)}
       </AnswersWrapper>
 

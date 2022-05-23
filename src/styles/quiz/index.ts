@@ -157,25 +157,6 @@ export const ToggleBackSlider = styled.button<{
         ? "calc(100% + 2px)"
         : "calc(50% + 2px)"};
 
-  /* width: ${({ isOverlap, totalToggleOptions }) =>
-    (totalToggleOptions > 2)
-      ? isOverlap
-        ? "calc(33.33% + 2px)"
-        : "calc(100% + 2px)"
-      : isOverlap
-        ? "calc(100% + 2px)"
-        : "calc(50% + 2px)"}; */
-
-  /* transform: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
-    (totalToggleOptions > 2)
-      ? isOverlap
-        ? translateY_ThreeOptions[selectedIndex]
-        : translateX_ThreeOptions[selectedIndex]
-      : isOverlap
-        ? translateY_TwoOptions[selectedIndex]
-        : translateX_TwoOptions[selectedIndex]
-  }; */
-
   transform: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
     (totalToggleOptions > 2)
       ? isOverlap
@@ -186,69 +167,32 @@ export const ToggleBackSlider = styled.button<{
         : translateX_TwoOptions[selectedIndex]
   };
 
-  border-radius: ${({ isOverlap, selectedIndex }) =>
-    isOverlap
-      ? (!selectedIndex
-        ? "40px 40px 40px 40px"
-        : "40px 40px 40px 40px")
-      : (!selectedIndex
-        ? "40px"
-        : "40px")};
-
-  /* border-radius: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
+  border-radius: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
     (totalToggleOptions > 2)
       ? isOverlap
         ? (!selectedIndex
-          ? "24px 24px 0px 0px"
-          : "0px 0px 24px 24px")
-        : (!selectedIndex
           ? "24px"
           : "24px")
+        : (!selectedIndex
+          ? "40px"
+          : "40px")
       : isOverlap
         ? (!selectedIndex
           ? "24px 24px 0px 0px"
           : "0px 0px 24px 24px")
         : (!selectedIndex
-          ? "24px"
-          : "24px")
-  }; */
+          ? "40px"
+          : "40px")};
 
   @media (min-width: ${widthBreakpoints["md"]}em) {
     height: 80px; 
-    
-    /* width: ${({ isOverlap, totalToggleOptions }) =>
-    (totalToggleOptions > 2)
-      ? isOverlap
-        ? "calc(100% + 2px)"
-        : "calc(33.33% + 2px)"
-      : isOverlap
-        ? "calc(100% + 2px)"
-        : "calc(50% + 2px)"}; */
-
-  /* transform: ${({ isOverlap, selectedIndex, totalToggleOptions }) =>
-    (totalToggleOptions > 2)
-      ? isOverlap
-        ? translateY_ThreeOptions[selectedIndex]
-        : translateX_ThreeOptions[selectedIndex]
-      : isOverlap
-        ? translateY_TwoOptions[selectedIndex]
-        : translateX_TwoOptions[selectedIndex]
-  }; */
-
-  border-radius: ${({ isOverlap, selectedIndex }) =>
-    isOverlap
-      ? (!selectedIndex
-        ? "40px 40px 40px 40px"
-        : "40px 40px 40px 40px")
-      : (!selectedIndex
-        ? "40px"
-        : "40px")};
-
+    border-radius: 40px;
   };
 `;
 
 export const ToggleFrontWrapper = styled.div`
   position: absolute;
+
   z-index: 2;
   width: 95vw;
 
@@ -296,7 +240,7 @@ export const OptionText = styled.button<{
   font-style: normal;
   font-weight: 700;
   font-size: 18px;
-  line-height: 40px;
+  line-height: 48px;
   transition: all 0.2s ease-in-out;
   background-color: transparent;
   border: none;
