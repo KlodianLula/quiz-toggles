@@ -1,6 +1,72 @@
-# Getting Started with Create React App
+
+# Reusable and Extendable Component Task - Quiz with Toggles
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Table of contents
+* [General info](#general-info)
+* [Assumtions](#assumtions)
+* [Technologies](#technologies)
+* [Setup](#setup)
+* [Available Scripts](#available-scripts)
+
+
+## General info
+This project is a task about making a reusable component using React. A quiz that requires to choose the right answer(s), from two or three options available.
+
+
+## Assumtions
+Looking at the design in Figma for this project we'll assume that the data coming from an API will have the following structure:
+```
+// When answers have two options:
+{[
+  "question": "An animal cell contains",
+  "answers": [
+    {
+      "toggleOptions": [
+        "Cell wall",
+        "Ribosomes",
+      ],
+      "selectedIndex": 1,
+      "correctIndex": 1
+    },
+    ...
+},...]
+```
+
+```
+// When answers have three options:
+[{
+  "question": "Which are the best sports people & teams?",
+  "answers": [
+    {
+      "toggleOptions": [
+        "Liverpool",
+        "Chelsea",
+        "Man Utd"
+      ],
+      "selectedIndex": 1,
+      "correctIndex": 2
+    },
+    ...
+},...]
+```
+	
+## Technologies
+Project is created with:
+* React: 8.1
+* React-Redux: 8.0
+* Redux-Toolkit: 1.8
+	
+
+## Setup
+To run this project, install it locally using npm:
+
+```
+$ cd ../my-toggle
+$ npm install
+$ npm start
+```
 
 ## Available Scripts
 

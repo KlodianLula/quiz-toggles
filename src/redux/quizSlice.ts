@@ -1,15 +1,18 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { mockData } from "../data/mock";
+import { mockData_2_Options, mockData_3_Options } from "../data/mock";
 import { Quiz } from "../models/Quiz"
 
 export interface QuizState {
     quiz: Quiz,
+    gridFractions: number[]
 }
 
-const initialValue: Quiz = mockData;
+const quizInitialValue: Quiz = mockData_2_Options; // for answers with 3 options use -->  mockData_3_Options;
+const gridInitialFractions: number[] = Array(quizInitialValue.answers.length).fill(1);
 
 const initialState: QuizState = {
-    quiz: initialValue,
+    quiz: quizInitialValue,
+    gridFractions: gridInitialFractions
 }
 
 export const quizSlice = createSlice({
@@ -17,7 +20,6 @@ export const quizSlice = createSlice({
     initialState,
     reducers: {
         selectAnswerOption: (state, action) => {
-            // state.quiz += action.payload
             const { answerIndex, optionIndex } = action.payload;
 
             state.quiz = {
@@ -31,11 +33,26 @@ export const quizSlice = createSlice({
                     ...state.quiz.answers.slice(answerIndex + 1, state.quiz.answers.length),
                 ]
             }
+        },
+        incrementGridFraction: (state, action) => {
+            const { answerIndex, totalToggleOptions } = action.payload;
+
+            state.gridFractions = [
+                ...state.gridFractions.slice(0, answerIndex),
+                totalToggleOptions,
+                ...state.gridFractions.slice(answerIndex + 1, state.gridFractions.length),
+            ]
+        },
+        decrementGridFraction: (state, action) => {
+            const { answerIndex } = action.payload;
+
+            state.gridFractions = [
+                ...state.gridFractions.slice(0, answerIndex),
+                1,
+                ...state.gridFractions.slice(answerIndex + 1, state.gridFractions.length),
+            ]
         }
-        // decrement: (state, action) => {
-        //     state.data -= action.payload
-        // }
     }
 })
 
-export const { selectAnswerOption } = quizSlice.actions;
+export const { selectAnswerOption, incrementGridFraction, decrementGridFraction } = quizSlice.actions;

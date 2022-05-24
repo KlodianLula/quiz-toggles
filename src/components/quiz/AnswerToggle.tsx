@@ -1,4 +1,9 @@
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useAppDispatch } from "../../redux/store/configureStore";
+import { selectAnswerOption } from "../../redux/quizSlice";
+import { getTextWidth, inMulish } from "../../util";
+import { Answer } from "../../models/Answer";
+import { useWindow } from "../../hooks/useWindow";
 import {
   ToggleWrapper,
   ToggleBackWrapper,
@@ -6,76 +11,83 @@ import {
   ToggleFrontWrapper,
   ToggleFront,
   ToggleFrontOption,
-  SelectToggleBack,
+  ToggleBackSlider,
   OptionText
 } from "../../styles/quiz"
-import { selectAnswerOption } from "../../redux/quizSlice";
-import { Answer } from "../../models/Answer";
-import useTextWidth from "../../hooks/lib/useTextWidth";
 import "@fontsource/mulish";
-import { useRef, useEffect, useState } from "react";
 
 export interface AnswerProps {
   answer: Answer,
   answerIndex: number,
-  totalCorrectAnswers: number
+  totalCorrectAnswers: number,
+  totalToggleOptions: number,
+  totalAnswers: number
 }
 
-export const AnswerToggle = ({ answer, answerIndex, totalCorrectAnswers }: AnswerProps) => {
+export const AnswerToggle = (
+  { answer,
+    answerIndex,
+    totalCorrectAnswers,
+    totalToggleOptions,
+    totalAnswers,
+  }: AnswerProps
+) => {
   const dispatch = useAppDispatch();
-  const selectedOption = answer.selectedIndex === 1;
-  const inMulish = "27.8px times";
-  const optionsWidth = [
-    useTextWidth({ text: answer.toggleOptions[0], font: inMulish }),
-    useTextWidth({ text: answer.toggleOptions[1], font: inMulish })
-  ];
+  const { isOverlap, toggleWidth, calculateToggleWidth } = useWindow();
 
   const ref = useRef<any>();
-  const [resizedToggleWidth, setResizedToggleWidth] = useState<any>();
-
-  function getToggleWidthOnWindowResize() {
-    const toggleWidth: string = window.getComputedStyle(ref.current).getPropertyValue("width");
-    const toggleWidthNumber: number = parseInt(toggleWidth.split(".")[0]);
-    setResizedToggleWidth(toggleWidthNumber);
-  }
+  const [refWidth, setRefWidth] = useState("");
+  const [optionsWidths, setOptionsWidths] = useState<number[]>([]);
 
   useEffect(() => {
-    getToggleWidthOnWindowResize();
-    console.log(resizedToggleWidth); // remove this
+    const tempArray = answer.toggleOptions.map(option => {
+      return getTextWidth(option, inMulish);
+    });
+    setOptionsWidths(tempArray);
+  }, []); // only on first load!
 
-    window.addEventListener('resize', getToggleWidthOnWindowResize);
-    return () => window.removeEventListener('resize', getToggleWidthOnWindowResize);
-  }, [resizedToggleWidth, setResizedToggleWidth]);
+  const getToggleWidth = useCallback(() => {
+    setRefWidth(window.getComputedStyle(ref.current).getPropertyValue("width"));
+
+    calculateToggleWidth(refWidth, optionsWidths, totalToggleOptions, answerIndex);
+  }, [refWidth, toggleWidth]);
+
+  useEffect(() => {
+    getToggleWidth();
+
+    window.addEventListener('resize', getToggleWidth);
+    return () => window.removeEventListener('resize', getToggleWidth);
+  }, [answer, getToggleWidth]);
 
   return (
     <ToggleWrapper>
       <ToggleBackWrapper
         ref={ref}
-        resizedToggleWidth={resizedToggleWidth}
-        optionsWidth={optionsWidth}
-        answerIndex={answerIndex}
+        isOverlap={isOverlap}
         totalCorrectAnswers={totalCorrectAnswers}
+        totalToggleOptions={totalToggleOptions}
       >
         <ToggleBack>
-          <SelectToggleBack
-            resizedToggleWidth={resizedToggleWidth}
-            optionsWidth={optionsWidth}
-            selectedOption={selectedOption}
+          <ToggleBackSlider
+            isOverlap={isOverlap}
+            selectedIndex={answer.selectedIndex}
             totalCorrectAnswers={totalCorrectAnswers}
+            totalToggleOptions={totalToggleOptions}
           />
         </ToggleBack>
       </ToggleBackWrapper>
+
       <ToggleFrontWrapper>
         <ToggleFront
-          resizedToggleWidth={resizedToggleWidth}
-          optionsWidth={optionsWidth}
+          isOverlap={isOverlap}
+          totalToggleOptions={totalToggleOptions}
         >
           {answer.toggleOptions.map((optionText, optionIndex) =>
             <ToggleFrontOption
               key={parseInt(answerIndex.toString() + optionIndex.toString())}
             >
               <OptionText
-                disabled={totalCorrectAnswers > 3} // here not hard coded!
+                disabled={totalCorrectAnswers === totalAnswers}
                 onClick={() => dispatch(selectAnswerOption({ answerIndex, optionIndex }))}
                 optionIndex={optionIndex}
                 selectedIndex={answer.selectedIndex}

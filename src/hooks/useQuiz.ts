@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { mockData } from "../data/mock";
+import { useAppSelector } from "../redux/store/configureStore";
 import { Answer } from "../models/Answer";
 
-export const useQuiz = (initialValue = mockData) => {
+export const useQuiz = () => {
+  const { quiz: initialValue } = useAppSelector(state => state.quiz);
+
   const [quiz, setQuiz] = useState(initialValue);
 
   const solveQuiz = (answerIndex: number, optionIndex: number, answer: Answer) => {

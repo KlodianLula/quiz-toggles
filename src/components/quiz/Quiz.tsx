@@ -4,11 +4,14 @@ import { useAnswer } from '../../hooks/useAnswer';
 import { useSpring, config, animated } from 'react-spring';
 import { AnswerToggle } from '.';
 import { AnswersWrapper, CorrectAnswer, QuestionTitle, QuizWrapper } from '../../styles/quiz'
-import { bgColors } from '../../util';
+import { bgColors, generateGridFractions, generateGridHeight } from '../../util';
 
 export const Quiz = () => {
-  const { quiz } = useAppSelector(state => state.quiz);
   const { totalCorrectAnswers, updateTotalCorrectAnswers } = useAnswer();
+  const { quiz, gridFractions } = useAppSelector(state => state.quiz);
+
+  const responsiveGridFractions = generateGridFractions(gridFractions);
+  const responsiveGridHeight = generateGridHeight(gridFractions);
 
   const springAnimatedColor = useSpring({
     background: bgColors[totalCorrectAnswers],
@@ -28,13 +31,19 @@ export const Quiz = () => {
         {quiz.question}
       </QuestionTitle>
 
-      <AnswersWrapper>
+      <AnswersWrapper
+        responsiveGridFractions={responsiveGridFractions}
+        responsiveGridHeight={responsiveGridHeight+"px"}
+        totalToggleOptions={quiz.answers[0].toggleOptions.length}
+      >
         {quiz.answers.map((answer, answerIndex) =>
           <AnswerToggle
             key={answerIndex}
             answer={answer}
             answerIndex={answerIndex}
             totalCorrectAnswers={totalCorrectAnswers}
+            totalToggleOptions={answer.toggleOptions.length}
+            totalAnswers={quiz.answers.length}
           />)}
       </AnswersWrapper>
 

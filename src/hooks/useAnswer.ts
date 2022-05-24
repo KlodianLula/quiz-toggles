@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { mockData } from "../data/mock";
 import { Quiz } from "../models/Quiz";
+import { useAppSelector } from "../redux/store/configureStore";
 import { sumCorrectAnswers } from "../util";
 
-const initialCorrectAnswers = sumCorrectAnswers(mockData.answers);
-
 export const useAnswer = () => {
+  const { quiz } = useAppSelector(state => state.quiz);
+  const initialCorrectAnswers = sumCorrectAnswers(quiz.answers);
+
   const [totalCorrectAnswers, setTotalCorrectAnswers ] = useState(initialCorrectAnswers);
 
   const updateTotalCorrectAnswers = (quiz: Quiz) => {
