@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { mockData_2_Options, mockData_3_Options } from "../data/mock";
 import { Quiz } from "../models/Quiz"
+import { shuffleAnswers } from "../util";
 
 export interface QuizState {
     quiz: Quiz,
@@ -9,6 +10,8 @@ export interface QuizState {
 
 const quizInitialValue: Quiz = mockData_2_Options; // for answers with 3 options use -->  mockData_3_Options;
 const gridInitialFractions: number[] = Array(quizInitialValue.answers.length).fill(1);
+
+const shuffledAnswers = shuffleAnswers(quizInitialValue.answers);
 
 const initialState: QuizState = {
     quiz: quizInitialValue,
@@ -19,6 +22,14 @@ export const quizSlice = createSlice({
     name: 'quiz',
     initialState,
     reducers: {
+        shuffleQuizAnswers: (state) => {
+            state.quiz = {
+                ...state.quiz,
+                answers: [
+                    ...shuffledAnswers
+                ]
+            }
+        },
         selectAnswerOption: (state, action) => {
             const { answerIndex, optionIndex } = action.payload;
 
@@ -55,4 +66,4 @@ export const quizSlice = createSlice({
     }
 })
 
-export const { selectAnswerOption, incrementGridFraction, decrementGridFraction } = quizSlice.actions;
+export const { shuffleQuizAnswers, selectAnswerOption, incrementGridFraction, decrementGridFraction } = quizSlice.actions;

@@ -1,4 +1,5 @@
 import { Answer } from "../models/Answer";
+import { Quiz } from "../models/Quiz";
 import { theme } from "../styles/theme";
 
 export const inMulish = "27.8px times";
@@ -114,3 +115,14 @@ export const getTextWidth = (currentText: string, font: string) => {
   const metrics = context.measureText(currentText);
   return metrics.width;
 };
+
+export const shuffleAnswers = (answers: Answer[]) => {
+  for (let i = answers.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i+1));
+    const temp = answers[i];
+    answers[i] = answers[j];
+    answers[j] = temp;
+  }
+    
+  return answers;
+}
